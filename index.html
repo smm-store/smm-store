@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة خدمات رشق المتابعين</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; direction: rtl; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        .balance-box { background: #e8f4fd; padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: center; font-weight: bold; color: #0275d8; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #555; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; background: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #218838; }
+        #message { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>خدمات رشق المتابعين</h2>
+    
+    <div class="balance-box">
+        المستخدم: <span id="username">جاري التحميل...</span> | الرصيد: $<span id="balance">0.00</span>
+    </div>
+
+    <div class="form-group">
+        <label>اختر الخدمة:</label>
+        <select id="serviceName">
+            <option value="زيادة متابعين إنستغرام (1.50$ لكل 100)">زيادة متابعين إنستغرام (1.50$ لكل 100)</option>
+            <option value="زيادة لاكات تيك توك (1.00$ لكل 100)">زيادة لايكات تيك توك (1.00$ لكل 100)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>رابط الحساب:</label>
+        <input type="text" id="link" placeholder="https://instagram.com/username">
+    </div>
+
+    <div class="form-group">
+        <label>الكمية:</label>
+        <input type="number" id="quantity" value="100" oninput="calculateTotal()">
+    </div>
+
+    <div class="form-group">
+        <label>السعر الإجمالي ($):</label>
+        <input type="text" id="total" value="1.50" readonly>
+    </div>
+
+    <button onclick="sendOrder()">إرسال الطلب</button>
+
+    <div id="message"></div>
+</div>
+
+<script>
+    // جلب معلومات المستخدم والرصيد عند فتح الصفحة
+    async function fetchUserData() {
+        try {
+            const res = await fetch('http://localhost:5000/api/user');
+            const data = await res.json();
+            document.getElementById('username').innerText = data.username;
+            document.getElementById('balance').innerText = data.balance.toFixed(2);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function calculateTotal() {
+        const qty = document.getElementById('quantity').value;
+        const total = (qty * 0.015).toFixed(2);
+        document.getElementById('total').value = total;
+    }
+
+    // إرسال الطلب للسيرفر
+    async function sendOrder() {
+        const serviceName = document.getElementById('serviceName').value;
+        const link = document.getElementById('link').value;
+        const quantity = document.getElementById('quantity').value;
+        const total = document.getElementById('total').value;
+
+        try {
+            const res = await fetch('http://localhost:5000/api/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ serviceName, link, quantity, total })
+            });
+
+            const data = await res.json();
+            const msgBox = document.getElementById('message');
+
+            if (data.success) {
+                msgBox.style.color = 'green';
+                msgBox.innerText = data.message;
+                document.getElementById('balance').innerText = data.balance.toFixed(2);
+            } else {
+                msgBox.style.color = 'red';
+                msgBox.innerText = data.message;
+            }
+        } catch (err) {
+            console.error(err);
+            alert('حدث خطأ في الاتصال بالسيرفر!');
+        }
+    }
+
+    fetchUserData();
+</script>
+
+</body>
+</html>

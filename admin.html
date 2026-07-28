@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الأدمن - طلبات الرشق</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .btn-refresh {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0 auto;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-refresh:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>لوحة تحكم المدير (الطلبات الواردة)</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>رقم الطلب</th>
+                    <th>اسم الخدمة</th>
+                    <th>الرابط</th>
+                    <th>الكمية</th>
+                    <th>السعر ($)</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTable">
+                <!-- ستظهر الطلبات هنا تلقائياً -->
+            </tbody>
+        </table>
+
+        <button class="btn-refresh" onclick="fetchOrders()">تحديث الطلبات</button>
+    </div>
+
+    <script>
+        async function fetchOrders() {
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/orders');
+                const orders = await response.json();
+                
+                const tbody = document.getElementById('ordersTable');
+                tbody.innerHTML = '';
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7">لا توجد طلبات حالياً</td></tr>';
+                    return;
+                }
+
+                orders.forEach(order => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>#${order.id}</td>
+                            <td>${order.serviceName}</td>
+                            <td><a href="${order.link}" target="_blank">رابط الحساب</a></td>
+                            <td>${order.quantity}</td>
+                            <td>$${order.total}</td>
+                            <td><span class="status">${order.status}</span></td>
+                            <td>
+                                <button onclick="updateStatus(${order.id}, 'Completed')" style="background: #28a745; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-left: 5px;">إكمال</button>
+                                <button onclick="updateStatus(${order.id}, 'Cancelled')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">إلغاء</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('خطأ في جلب الطلبات:', error);
+            }
+        }
+
+        async function updateStatus(id, newStatus) {
+            try {
+                const res = await fetch(`http://localhost:5000/api/admin/order/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    fetchOrders(); // تحديث الجدول تلقائياً بعد التعديل
+                } else {
+                    alert('فشل تحديث الحالة');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('حدث خطأ في الاتصال بالسيرفر');
+            }
+        }
+
+        // جلب الطلبات أول ما تفتح الصفحة
+        fetchOrders();
+    </script>
+
+</body>
+</html>
