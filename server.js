@@ -1,104 +1,66 @@
 const express = require('express');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
 const app = express();
-app.use(express.json());
-app.use(cors());
 
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Serve static files (index.html, admin.html, etc.) from the root directory
+app.use(express.static(__dirname));
+
+// Database connection
 const db = new sqlite3.Database('./database.sqlite', (err) => {
-  if (err) {
-    console.error('خطأ في الاتصال بقاعدة البيانات:', err.message);
-  } else {
-    console.log('تم الاتصال بقاعدة البيانات بنجاح.');
-  }
+    if (err) {
+        console.error('خطأ في الاتصال بقاعدة البيانات:', err.message);
+    } else {
+        console.log('تم الاتصال بقاعدة البيانات بنجاح.');
+    }
 });
 
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS users (
+// Create table if not exists
+db.run(`CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT,
-    balance REAL
-  )`);
+    service TEXT,
+    quantity TEXT,
+    status TEXT DEFAULT 'قيد الانتظار'
+)`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS orders (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    serviceName TEXT,
-    link TEXT,
-    quantity INTEGER,
-    total REAL,
-    status TEXT
-  )`);
-
-  db.get(`SELECT COUNT(*) as count FROM users`, (err, row) => {
-    if (row.count === 0) {
-      db.run(`INSERT INTO users (username, balance) VALUES ('زائر_مميز', 10.00)`);
-    }
-  });
+// Root route to explicitly serve index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/api/user', (req, res) => {
-  db.get(`SELECT * FROM users LIMIT 1`, (err, row) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(row);
-  });
-});
-
-app.post('/api/order', (req, res) => {
-  const { serviceName, link, quantity, total } = req.body;
-
-  db.get(`SELECT * FROM users LIMIT 1`, (err, user) => {
-    if (err) return res.status(500).json({ error: err.message });
-
-    if (user.balance < parseFloat(total)) {
-      return res.status(400).json({ success: false, message: 'رصيدك لا يكفي!' });
-    }
-
-    const newBalance = user.balance - parseFloat(total);
-
-    db.run(`UPDATE users SET balance = ? WHERE id = ?`, [newBalance, user.id], (err) => {
-      if (err) return res.status(500).json({ error: err.message });
-
-      db.run(
-        `INSERT INTO orders (serviceName, link, quantity, total, status) VALUES (?, ?, ?, ?, ?)`,
-        [serviceName, link, quantity, total, 'Processing'],
-        function (err) {
-          if (err) return res.status(500).json({ error: err.message });
-
-          res.json({
-            success: true,
-            message: 'تم استلام طلبك بنجاح وحفظه في قاعدة البيانات!',
-            balance: newBalance,
-            newOrder: { id: this.lastID, serviceName, link, quantity, total, status: 'Processing' }
-          });
-        }
-      );
-    });
-  });
-});
-
+// Admin orders API
 app.get('/api/admin/orders', (req, res) => {
-  db.all(`SELECT * FROM orders ORDER BY id DESC`, [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(rows);
-  });
+    db.all(`SELECT * FROM orders ORDER BY id DESC`, [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
 });
 
-app.patch('/api/admin/order/:id', (req, res) => {
-  const orderId = req.params.id;
-  const { status } = req.body;
-  
-  db.run(`UPDATE orders SET status = ? WHERE id = ?`, [status, orderId], (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ success: true, message: 'تم تحديث حالة الطلب بنجاح' });
-  });
+// Update order status API
+app.put('/api/admin/order/:id', (req, res) => {
+    const { status } = req.body;
+    const { id } = req.params;
+    db.run(`UPDATE orders SET status = ? WHERE id = ?`, [status, id], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ message: 'تم تحديث حالة الطلب بنجاح' });
+    });
 });
 
-const PORT = 5000;
+// Server port setup
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`السيرفر يعمل بنجاح على الرابط: http://localhost:${PORT}`);
+    console.log(`السيرفر فعال على المنفذ: ${PORT}`);
 });
