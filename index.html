@@ -187,31 +187,41 @@
                 <label for="service">اختر الخدمة:</label>
                 <select id="service" required>
                     <option value="" disabled selected>-- اختر الخدمة المطلوبة --</option>
+                    
+                    <!-- تيك توك -->
                     <optgroup label="تيك توك (TikTok)">
-                        <option value="متابعين تيك توك" data-price="0.60">متابعين تيك توك</option>
-                        <option value="لايكات تيك توك" data-price="0.40">لايكات تيك توك</option>
-                        <option value="مشاهدات تيك توك" data-price="0.75">مشاهدات تيك توك</option>
-                        <option value="مشاهدات لايف تيك توك" data-price="0.75">مشاهدات لايف تيك توك</option>
+                        <option value="متابعين تيك توك" data-price="0.75">متابعين تيك توك</option>
+                        <option value="لايكات تيك توك" data-price="0.60">لايكات تيك توك</option>
+                        <option value="مشاهدات تيك توك" data-price="0.55">مشاهدات تيك توك</option>
+                        <option value="مشاهدات لايف تيك توك" data-price="0.70">مشاهدات لايف تيك توك</option>
                     </optgroup>
+
+                    <!-- إنستغرام -->
                     <optgroup label="إنستغرام (Instagram)">
-                        <option value="متابعين إنستغرام" data-price="0.60">متابعين إنستغرام</option>
-                        <option value="لايكات إنستغرام" data-price="0.40">لايكات إنستغرام</option>
-                        <option value="مشاهدات إنستغرام" data-price="0.75">مشاهدات إنستغرام</option>
-                        <option value="مشاهدات لايف إنستغرام" data-price="0.75">مشاهدات لايف إنستغرام</option>
+                        <option value="متابعين إنستغرام" data-price="0.65">متابعين إنستغرام</option>
+                        <option value="لايكات إنستغرام" data-price="0.60">لايكات إنستغرام</option>
+                        <option value="مشاهدات إنستغرام" data-price="0.55">مشاهدات إنستغرام</option>
+                        <option value="مشاهدات لايف إنستغرام" data-price="0.70">مشاهدات لايف إنستغرام</option>
                     </optgroup>
+
+                    <!-- فيسبوك -->
                     <optgroup label="فيسبوك (Facebook)">
-                        <option value="متابعين فيسبوك" data-price="0.60">متابعين فيسبوك</option>
-                        <option value="لايكات فيسبوك" data-price="0.40">لايكات فيسبوك</option>
-                        <option value="مشاهدات فيسبوك" data-price="0.75">مشاهدات فيسبوك</option>
-                        <option value="مشاهدات لايف فيسبوك" data-price="0.75">مشاهدات لايف فيسبوك</option>
+                        <option value="متابعين فيسبوك" data-price="0.65">متابعين فيسبوك</option>
+                        <option value="لايكات فيسبوك" data-price="0.60">لايكات فيسبوك</option>
+                        <option value="مشاهدات فيسبوك" data-price="0.55">مشاهدات فيسبوك</option>
+                        <option value="مشاهدات لايف فيسبوك" data-price="0.70">مشاهدات لايف فيسبوك</option>
                     </optgroup>
+
+                    <!-- يوتيوب -->
                     <optgroup label="يوتيوب (YouTube)">
                         <option value="اشتراكات يوتيوب" data-price="1.00">اشتراكات يوتيوب</option>
-                        <option value="لايكات يوتيوب" data-price="0.50">لايكات يوتيوب</option>
-                        <option value="مشاهدات يوتيوب" data-price="0.75">مشاهدات يوتيوب</option>
+                        <option value="لايكات يوتيوب" data-price="0.60">لايكات يوتيوب</option>
+                        <option value="مشاهدات يوتيوب" data-price="0.55">مشاهدات يوتيوب</option>
                     </optgroup>
+
+                    <!-- منصة كيك -->
                     <optgroup label="منصة كيك (Kick)">
-                        <option value="مشاهدات برنامج كيك" data-price="0.75">مشاهدات برنامج كيك</option>
+                        <option value="مشاهدات برنامج كيك" data-price="0.55">مشاهدات برنامج كيك</option>
                     </optgroup>
                 </select>
             </div>
@@ -236,9 +246,9 @@
                 </select>
             </div>
 
-            <!-- صندوق معلومات التحويل يظهر حسب الاختيار -->
+            <!-- صندوق معلومات التحويل -->
             <div id="paymentDetails" class="payment-info">
-                <span id="paymentInstruction">يرجى تحويل المبلغ المطلوبة إلى المحفظة أدناه:</span>
+                <span id="paymentInstruction">يرجى تحويل المبلغ المطلوب إلى المحفظة أدناه:</span>
                 <p id="walletInfo" style="font-weight: bold; margin-top: 5px; color: #b45309;"></p>
             </div>
 
@@ -257,7 +267,6 @@
             document.getElementById('totalPrice').innerText = total.toFixed(2);
         }
 
-        // عرض تفاصيل الدفع حسب اختيار العميل
         document.getElementById('paymentMethod').addEventListener('change', function() {
             const method = this.value;
             const detailsBox = document.getElementById('paymentDetails');
@@ -286,7 +295,6 @@
             const paymentMethod = document.getElementById('paymentMethod').value;
             const totalPrice = document.getElementById('totalPrice').innerText;
 
-            // دمج طريقة الدفع مع الخدمة لكي تظهر بوضوح في لوحة التحكم لديك
             const fullServiceDescription = `${service} (${quantity} قطعة) - الدفع عبر: ${paymentMethod} (${totalPrice}$)`;
 
             try {
