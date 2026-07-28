@@ -303,7 +303,6 @@
                         <option value="" disabled selected>-- اختر طريقة الدفع --</option>
                         <option value="زين كاش">زين كاش (Zain Cash)</option>
                         <option value="آسيا حولة">آسيا حولة (Asia Hawala)</option>
-                        <option value="USDT">عملات رقمية USDT (TRC20)</option>
                         <option value="ماستر كارد">ماستر كارد (Mastercard)</option>
                     </select>
                 </div>
@@ -394,8 +393,6 @@
                 depositText.innerText = 'رقم محفظة زين كاش: 07772385374';
             } else if (method === 'آسيا حولة') {
                 depositText.innerText = 'رقم محفظة آسيا حولة: 07772385373';
-            } else if (method === 'USDT') {
-                depositText.innerText = 'عنوان محفظة USDT (TRC20): TYourWalletAddressHere';
             } else if (method === 'ماستر كارد') {
                 depositText.innerText = 'رقم الماستر كارد للتحويل: 6766393869';
             }
