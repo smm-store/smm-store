@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الأدمن - طلبات الرشق</title>
+    <title>لوحة التحكم - إدارة الطلبات</title>
     <style>
         body {
             font-family: Tahoma, sans-serif;
@@ -13,16 +13,17 @@
             direction: rtl;
         }
         .container {
-            max-width: 1000px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 950px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         h2 {
             text-align: center;
             color: #333;
+            margin-bottom: 20px;
         }
         table {
             width: 100%;
@@ -31,7 +32,7 @@
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
         }
         th {
@@ -41,106 +42,108 @@
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        .btn-refresh {
-            display: block;
-            width: 200px;
-            margin: 20px auto 0 auto;
-            padding: 10px;
-            background: #28a745;
-            color: white;
+        .action-btn {
+            padding: 6px 12px;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
             cursor: pointer;
-            text-align: center;
+            font-weight: bold;
+            color: white;
+            background-color: #28a745;
         }
-        .btn-refresh:hover {
-            background: #218838;
+        .action-btn:hover {
+            background-color: #218838;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>لوحة تحكم المدير (الطلبات الواردة)</h2>
-        
+        <h2>🛠️ لوحة تحكم الطلبات</h2>
         <table>
             <thead>
                 <tr>
                     <th>رقم الطلب</th>
-                    <th>اسم الخدمة</th>
-                    <th>الرابط</th>
+                    <th>الحساب / الرابط</th>
+                    <th>الخدمة</th>
                     <th>الكمية</th>
-                    <th>السعر ($)</th>
                     <th>الحالة</th>
-                    <th>الإجراءات</th>
+                    <th>الإجراء</th>
                 </tr>
             </thead>
             <tbody id="ordersTable">
-                <!-- ستظهر الطلبات هنا تلقائياً -->
+                <tr>
+                    <td colspan="6">جاري تحميل الطلبات...</td>
+                </tr>
             </tbody>
         </table>
 
-        <button class="btn-refresh" onclick="fetchOrders()">تحديث الطلبات</button>
+        <a href="index.html" class="back-link">العودة إلى صفحة المتجر الرئيسية</a>
     </div>
 
     <script>
         async function fetchOrders() {
             try {
-                const response = await fetch('http://localhost:5000/api/admin/orders');
+                const response = await fetch('/api/admin/orders');
                 const orders = await response.json();
-                
                 const tbody = document.getElementById('ordersTable');
                 tbody.innerHTML = '';
 
                 if (orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7">لا توجد طلبات حالياً</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6">لا توجد طلبات حتى الآن</td></tr>';
                     return;
                 }
 
                 orders.forEach(order => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>#${order.id}</td>
-                            <td>${order.serviceName}</td>
-                            <td><a href="${order.link}" target="_blank">رابط الحساب</a></td>
-                            <td>${order.quantity}</td>
-                            <td>$${order.total}</td>
-                            <td><span class="status">${order.status}</span></td>
-                            <td>
-                                <button onclick="updateStatus(${order.id}, 'Completed')" style="background: #28a745; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-left: 5px;">إكمال</button>
-                                <button onclick="updateStatus(${order.id}, 'Cancelled')" style="background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer;">إلغاء</button>
-                            </td>
-                        </tr>
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${order.id}</td>
+                        <td>${order.username}</td>
+                        <td>${order.service}</td>
+                        <td>${order.quantity}</td>
+                        <td><b>${order.status}</b></td>
+                        <td>
+                            <button class="action-btn" onclick="updateStatus(${order.id}, '${order.status === 'مكتمل' ? 'قيد الانتظار' : 'مكتمل'}')">
+                                ${order.status === 'مكتمل' ? 'إرجاع قيد الانتظار' : 'تعيين مكتمل'}
+                            </button>
+                        </td>
                     `;
+                    tbody.appendChild(tr);
                 });
-            } catch (error) {
-                console.error('خطأ في جلب الطلبات:', error);
+            } catch (err) {
+                console.error('خطأ في جلب الطلبات:', err);
             }
         }
 
         async function updateStatus(id, newStatus) {
             try {
-                const res = await fetch(`http://localhost:5000/api/admin/order/${id}`, {
-                    method: 'PATCH',
+                const response = await fetch(`/api/admin/order/${id}`, {
+                    method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: newStatus })
                 });
-                const data = await res.json();
-                if (data.success) {
-                    fetchOrders(); // تحديث الجدول تلقائياً بعد التعديل
+                if (response.ok) {
+                    fetchOrders();
                 } else {
-                    alert('فشل تحديث الحالة');
+                    alert('حدث خطأ أثناء تحديث الحالة');
                 }
             } catch (err) {
-                console.error(err);
-                alert('حدث خطأ في الاتصال بالسيرفر');
+                alert('تعذر الاتصال بالسيرفر');
             }
         }
 
-        // جلب الطلبات أول ما تفتح الصفحة
         fetchOrders();
+        setInterval(fetchOrders, 5000);
     </script>
-
 </body>
 </html>
