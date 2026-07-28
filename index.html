@@ -42,6 +42,17 @@
             font-size: 16px;
             box-sizing: border-box;
         }
+        .price-box {
+            background-color: #e9f7ef;
+            border: 1px solid #d4edda;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #155724;
+            margin-bottom: 20px;
+        }
         button {
             width: 100%;
             padding: 14px;
@@ -75,41 +86,45 @@
                     <option value="" disabled selected>-- اختر الخدمة المطلوبة --</option>
                     
                     <optgroup label="تيك توك (TikTok)">
-                        <option value="متابعين تيك توك">متابعين تيك توك</option>
-                        <option value="لايكات تيك توك">لايكات تيك توك</option>
-                        <option value="مشاهدات تيك توك">مشاهدات تيك توك</option>
-                        <option value="مشاهدات لايف تيك توك">مشاهدات لايف تيك توك</option>
+                        <option value="متابعين تيك توك" data-price="3000">متابعين تيك توك (3000 لكل 1000)</option>
+                        <option value="لايكات تيك توك" data-price="1500">لايكات تيك توك (1500 لكل 1000)</option>
+                        <option value="مشاهدات تيك توك" data-price="500">مشاهدات تيك توك (500 لكل 1000)</option>
+                        <option value="مشاهدات لايف تيك توك" data-price="2000">مشاهدات لايف تيك توك (2000 لكل 1000)</option>
                     </optgroup>
 
                     <optgroup label="إنستغرام (Instagram)">
-                        <option value="متابعين إنستغرام">متابعين إنستغرام</option>
-                        <option value="لايكات إنستغرام">لايكات إنستغرام</option>
-                        <option value="مشاهدات إنستغرام">مشاهدات إنستغرام</option>
-                        <option value="مشاهدات لايف إنستغرام">مشاهدات لايف إنستغرام</option>
+                        <option value="متابعين إنستغرام" data-price="3500">متابعين إنستغرام (3500 لكل 1000)</option>
+                        <option value="لايكات إنستغرام" data-price="1500">لايكات إنستغرام (1500 لكل 1000)</option>
+                        <option value="مشاهدات إنستغرام" data-price="500">مشاهدات إنستغرام (500 لكل 1000)</option>
+                        <option value="مشاهدات لايف إنستغرام" data-price="2000">مشاهدات لايف إنستغرام (2000 لكل 1000)</option>
                     </optgroup>
 
                     <optgroup label="فيسبوك (Facebook)">
-                        <option value="متابعين فيسبوك">متابعين فيسبوك</option>
-                        <option value="لايكات فيسبوك">لايكات فيسبوك</option>
-                        <option value="مشاهدات فيسبوك">مشاهدات فيسبوك</option>
-                        <option value="مشاهدات لايف فيسبوك">مشاهدات لايف فيسبوك</option>
+                        <option value="متابعين فيسبوك" data-price="4000">متابعين فيسبوك (4000 لكل 1000)</option>
+                        <option value="لايكات فيسبوك" data-price="2000">لايكات فيسبوك (2000 لكل 1000)</option>
+                        <option value="مشاهدات فيسبوك" data-price="1000">مشاهدات فيسبوك (1000 لكل 1000)</option>
+                        <option value="مشاهدات لايف فيسبوك" data-price="2500">مشاهدات لايف فيسبوك (2500 لكل 1000)</option>
                     </optgroup>
 
                     <optgroup label="يوتيوب (YouTube)">
-                        <option value="اشتراكات يوتيوب">اشتراكات يوتيوب</option>
-                        <option value="لايكات يوتيوب">لايكات يوتيوب</option>
-                        <option value="مشاهدات يوتيوب">مشاهدات يوتيوب</option>
+                        <option value="اشتراكات يوتيوب" data-price="5000">اشتراكات يوتيوب (5000 لكل 1000)</option>
+                        <option value="لايكات يوتيوب" data-price="2500">لايكات يوتيوب (2500 لكل 1000)</option>
+                        <option value="مشاهدات يوتيوب" data-price="1500">مشاهدات يوتيوب (1500 لكل 1000)</option>
                     </optgroup>
 
                     <optgroup label="منصة كيك (Kick)">
-                        <option value="مشاهدات برنامج كيك">مشاهدات برنامج كيك</option>
+                        <option value="مشاهدات برنامج كيك" data-price="1500">مشاهدات برنامج كيك (1500 لكل 1000)</option>
                     </optgroup>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="quantity">الكمية المطلوبة:</label>
-                <input type="text" id="quantity" required placeholder="مثال: 1000">
+                <input type="number" id="quantity" required placeholder="مثال: 1000" min="100" value="1000">
+            </div>
+
+            <div class="price-box">
+                السعر الإجمالي المتوقع: <span id="totalPrice">0</span> د.ع
             </div>
 
             <button type="submit">إرسال الطلب الآن</button>
@@ -117,6 +132,21 @@
     </div>
 
     <script>
+        // دالة حساب السعر التلقائي
+        function calculatePrice() {
+            const serviceSelect = document.getElementById('service');
+            const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+            const pricePer1000 = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+
+            const total = (quantity / 1000) * pricePer1000;
+            document.getElementById('totalPrice').innerText = total.toLocaleString();
+        }
+
+        document.getElementById('service').addEventListener('change', calculatePrice);
+        document.getElementById('quantity').addEventListener('input', calculatePrice);
+
+        // إرسال الطلب للسيرفر
         document.getElementById('orderForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value;
@@ -132,6 +162,7 @@
                 if (response.ok) {
                     alert('تم إرسال طلبك بنجاح! سيتم تنفيذ الطلب قريباً.');
                     document.getElementById('orderForm').reset();
+                    calculatePrice();
                 } else {
                     alert('حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى.');
                 }
