@@ -85,35 +85,40 @@
                 <select id="service" required>
                     <option value="" disabled selected>-- اختر الخدمة المطلوبة --</option>
                     
+                    <!-- تيك توك -->
                     <optgroup label="تيك توك (TikTok)">
-                        <option value="متابعين تيك توك" data-price="3000">متابعين تيك توك (3000 لكل 1000)</option>
-                        <option value="لايكات تيك توك" data-price="1500">لايكات تيك توك (1500 لكل 1000)</option>
-                        <option value="مشاهدات تيك توك" data-price="500">مشاهدات تيك توك (500 لكل 1000)</option>
-                        <option value="مشاهدات لايف تيك توك" data-price="2000">مشاهدات لايف تيك توك (2000 لكل 1000)</option>
+                        <option value="متابعين تيك توك" data-price="2.00">متابعين تيك توك</option>
+                        <option value="لايكات تيك توك" data-price="1.00">لايكات تيك توك</option>
+                        <option value="مشاهدات تيك توك" data-price="0.50">مشاهدات تيك توك</option>
+                        <option value="مشاهدات لايف تيك توك" data-price="1.50">مشاهدات لايف تيك توك</option>
                     </optgroup>
 
+                    <!-- إنستغرام -->
                     <optgroup label="إنستغرام (Instagram)">
-                        <option value="متابعين إنستغرام" data-price="3500">متابعين إنستغرام (3500 لكل 1000)</option>
-                        <option value="لايكات إنستغرام" data-price="1500">لايكات إنستغرام (1500 لكل 1000)</option>
-                        <option value="مشاهدات إنستغرام" data-price="500">مشاهدات إنستغرام (500 لكل 1000)</option>
-                        <option value="مشاهدات لايف إنستغرام" data-price="2000">مشاهدات لايف إنستغرام (2000 لكل 1000)</option>
+                        <option value="متابعين إنستغرام" data-price="2.50">متابعين إنستغرام</option>
+                        <option value="لايكات إنستغرام" data-price="1.00">لايكات إنستغرام</option>
+                        <option value="مشاهدات إنستغرام" data-price="0.50">مشاهدات إنستغرام</option>
+                        <option value="مشاهدات لايف إنستغرام" data-price="1.50">مشاهدات لايف إنستغرام</option>
                     </optgroup>
 
+                    <!-- فيسبوك -->
                     <optgroup label="فيسبوك (Facebook)">
-                        <option value="متابعين فيسبوك" data-price="4000">متابعين فيسبوك (4000 لكل 1000)</option>
-                        <option value="لايكات فيسبوك" data-price="2000">لايكات فيسبوك (2000 لكل 1000)</option>
-                        <option value="مشاهدات فيسبوك" data-price="1000">مشاهدات فيسبوك (1000 لكل 1000)</option>
-                        <option value="مشاهدات لايف فيسبوك" data-price="2500">مشاهدات لايف فيسبوك (2500 لكل 1000)</option>
+                        <option value="متابعين فيسبوك" data-price="3.00">متابعين فيسبوك</option>
+                        <option value="لايكات فيسبوك" data-price="1.50">لايكات فيسبوك</option>
+                        <option value="مشاهدات فيسبوك" data-price="0.80">مشاهدات فيسبوك</option>
+                        <option value="مشاهدات لايف فيسبوك" data-price="2.00">مشاهدات لايف فيسبوك</option>
                     </optgroup>
 
+                    <!-- يوتيوب -->
                     <optgroup label="يوتيوب (YouTube)">
-                        <option value="اشتراكات يوتيوب" data-price="5000">اشتراكات يوتيوب (5000 لكل 1000)</option>
-                        <option value="لايكات يوتيوب" data-price="2500">لايكات يوتيوب (2500 لكل 1000)</option>
-                        <option value="مشاهدات يوتيوب" data-price="1500">مشاهدات يوتيوب (1500 لكل 1000)</option>
+                        <option value="اشتراكات يوتيوب" data-price="4.00">اشتراكات يوتيوب</option>
+                        <option value="لايكات يوتيوب" data-price="2.00">لايكات يوتيوب</option>
+                        <option value="مشاهدات يوتيوب" data-price="1.00">مشاهدات يوتيوب</option>
                     </optgroup>
 
+                    <!-- منصة كيك -->
                     <optgroup label="منصة كيك (Kick)">
-                        <option value="مشاهدات برنامج كيك" data-price="1500">مشاهدات برنامج كيك (1500 لكل 1000)</option>
+                        <option value="مشاهدات برنامج كيك" data-price="1.00">مشاهدات برنامج كيك</option>
                     </optgroup>
                 </select>
             </div>
@@ -124,7 +129,7 @@
             </div>
 
             <div class="price-box">
-                السعر الإجمالي المتوقع: <span id="totalPrice">0</span> د.ع
+                السعر الإجمالي: <span id="totalPrice">0</span> $
             </div>
 
             <button type="submit">إرسال الطلب الآن</button>
@@ -132,7 +137,6 @@
     </div>
 
     <script>
-        // دالة حساب السعر التلقائي
         function calculatePrice() {
             const serviceSelect = document.getElementById('service');
             const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
@@ -140,13 +144,12 @@
             const quantity = parseFloat(document.getElementById('quantity').value) || 0;
 
             const total = (quantity / 1000) * pricePer1000;
-            document.getElementById('totalPrice').innerText = total.toLocaleString();
+            document.getElementById('totalPrice').innerText = total.toFixed(2);
         }
 
         document.getElementById('service').addEventListener('change', calculatePrice);
         document.getElementById('quantity').addEventListener('input', calculatePrice);
 
-        // إرسال الطلب للسيرفر
         document.getElementById('orderForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value;
