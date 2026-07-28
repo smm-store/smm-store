@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files (index.html, admin.html, etc.) from the root directory
+// Serve static files
 app.use(express.static(__dirname));
 
 // Database connection
@@ -30,9 +30,25 @@ db.run(`CREATE TABLE IF NOT EXISTS orders (
     status TEXT DEFAULT 'قيد الانتظار'
 )`);
 
-// Root route to explicitly serve index.html
+// Root route to serve index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// API to save a new order from the store frontend
+app.post('/api/orders', (req, res) => {
+    const { username, service, quantity } = req.body;
+    if (!username || !service || !quantity) {
+        return res.status(400).json({ error: 'الرجاء ملء جميع الحقول' });
+    }
+    
+    db.run(`INSERT INTO orders (username, service, quantity) VALUES (?, ?, ?)`, [username, service, quantity], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ message: 'تم إرسال الطلب بنجاح', id: this.lastID });
+    });
 });
 
 // Admin orders API
