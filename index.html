@@ -85,7 +85,6 @@
             font-weight: bold;
         }
 
-        /* لوحة العميل بعد تسجيل الدخول */
         #dashboardView {
             display: none;
         }
@@ -160,17 +159,17 @@
             </div>
         </div>
 
-        <!-- لوحة التحكم الخاصة بالعميل (تظهر بعد تسجيل الدخول) -->
+        <!-- لوحة التحكم الخاصة بالعميل -->
         <div id="dashboardView">
             <div class="user-header">
                 <span>مرحباً، <b id="displayUser"></b></span>
                 <span class="balance-badge">الرصيد: $<span id="userBalance">0.00</span></span>
             </div>
 
-            <h2>🚀 قسم طلبات رشق السوشيال ميديا</h2>
+            <h2>🚀 طلبات رشق السوشيال ميديا</h2>
             <form id="orderForm">
                 <div class="form-group">
-                    <label for="username">رابط الحساب أو اليوزر:</label>
+                    <label for="orderUsername">رابط الحساب أو اليوزر:</label>
                     <input type="text" id="orderUsername" required placeholder="أدخل الرابط أو اسم المستخدم">
                 </div>
 
@@ -199,7 +198,7 @@
                     السعر الإجمالي: <span id="totalPrice">0</span> $
                 </div>
 
-                <button type="submit">إرسال الطلب الآن</button>
+                <button type="submit">إتمام الطلب وخصم من الرصيد</button>
             </form>
 
             <!-- قسم شحن الرصيد وطرق الدفع -->
@@ -242,14 +241,14 @@
             }
         }
 
-        // محاكاة تسجيل الدخول
         document.getElementById('authForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('authUsername').value;
             
-            // حفظ اسم المستخدم في الذاكرة المؤقتة للمتصفح
             localStorage.setItem('smm_user', username);
-            localStorage.setItem('smm_balance', '5.00'); // رصيد تجريبي ترحيبي
+            if (!localStorage.getItem('smm_balance')) {
+                localStorage.setItem('smm_balance', '5.00'); // رصيد تجريبي افتراضي للحساب الجديد
+            }
 
             checkLoginState();
         });
@@ -260,7 +259,7 @@
                 document.getElementById('authView').style.display = 'none';
                 document.getElementById('dashboardView').style.display = 'block';
                 document.getElementById('displayUser').innerText = user;
-                document.getElementById('userBalance').innerText = localStorage.getItem('smm_balance') || '0.00';
+                document.getElementById('userBalance').innerText = parseFloat(localStorage.getItem('smm_balance') || '0').toFixed(2);
                 calculatePrice();
             } else {
                 document.getElementById('authView').style.display = 'block';
@@ -286,16 +285,29 @@
         document.getElementById('service').addEventListener('change', calculatePrice);
         document.getElementById('quantity').addEventListener('input', calculatePrice);
 
-        // إرسال الطلب
+        // إرسال الطلب والتحقق من الرصيد وخصمه
         document.getElementById('orderForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const username = document.getElementById('orderUsername').value;
             const service = document.getElementById('service').value;
             const quantity = document.getElementById('quantity').value;
-            const totalPrice = document.getElementById('totalPrice').innerText;
+            const totalPrice = parseFloat(document.getElementById('totalPrice').innerText);
             const currentUser = localStorage.getItem('smm_user');
 
-            const fullDescription = `[مستخدم: ${currentUser}] ${service} (${quantity} قطعة) - السعر: ${totalPrice}$`;
+            let currentBalance = parseFloat(localStorage.getItem('smm_balance')) || 0;
+
+            // التحقق من الرصيد
+            if (currentBalance < totalPrice) {
+                alert('⚠️ رصيدك الحالي غير كافي لإتمام هذا الطلب! يرجى شحن رصيدك عبر وسائل الدفع الموجودة في الأسفل.');
+                return;
+            }
+
+            // خصم المبلغ من الرصيد وتحديثه في المتصفح
+            currentBalance -= totalPrice;
+            localStorage.setItem('smm_balance', currentBalance.toFixed(2));
+            document.getElementById('userBalance').innerText = currentBalance.toFixed(2);
+
+            const fullDescription = `[مستخدم: ${currentUser}] ${service} (${quantity} قطعة) - السعر المخصوم: ${totalPrice}$`;
 
             try {
                 const response = await fetch('/api/orders', {
@@ -308,18 +320,17 @@
                     })
                 });
                 if (response.ok) {
-                    alert('تم إرسال طلبك بنجاح وسيتم تنفيذه قريباً!');
+                    alert('✅ تم خصم السعر من رصيدك وإرسال طلبك بنجاح! سيتم تنفيذه قريباً.');
                     document.getElementById('orderForm').reset();
                     calculatePrice();
                 } else {
-                    alert('حدث خطأ أثناء إرسال الطلب.');
+                    alert('حدث خطأ أثناء إرسال الطلب للسيرفر.');
                 }
             } catch (err) {
                 alert('تعذر الاتصال بالسيرفر.');
             }
         });
 
-        // التحقق من حالة الدخول عند تحميل الصفحة
         window.addEventListener('DOMContentLoaded', checkLoginState);
     </script>
 </body>
