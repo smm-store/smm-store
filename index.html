@@ -3,109 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة خدمات رشق المتابعين</title>
+    <title>متجر خدمات رشق السوشيال ميديا</title>
     <style>
-        body { font-family: Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; direction: rtl; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { color: #333; text-align: center; }
-        .balance-box { background: #e8f4fd; padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: center; font-weight: bold; color: #0275d8; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #555; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; background: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #218838; }
-        #message { margin-top: 15px; text-align: center; font-weight: bold; }
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .admin-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .admin-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .admin-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>خدمات رشق المتابعين</h2>
-    
-    <div class="balance-box">
-        المستخدم: <span id="username">جاري التحميل...</span> | الرصيد: $<span id="balance">0.00</span>
+    <div class="container">
+        <h2>🚀 طلبات رشق السوشيال ميديا</h2>
+        <form id="orderForm">
+            <div class="form-group">
+                <label for="username">رابط الحساب أو اليوزر:</label>
+                <input type="text" id="username" required placeholder="أدخل الرابط أو اسم المستخدم هنا">
+            </div>
+
+            <div class="form-group">
+                <label for="service">اختر الخدمة:</label>
+                <select id="service" required>
+                    <option value="" disabled selected>-- اختر الخدمة المطلوبة --</option>
+                    
+                    <!-- تيك توك -->
+                    <optgroup label="تيك توك (TikTok)">
+                        <option value="متابعين تيك توك">متابعين تيك توك</option>
+                        <option value="لايكات تيك توك">لايكات تيك توك</option>
+                        <option value="مشاهدات تيك توك">مشاهدات تيك توك</option>
+                        <option value="مشاهدات لايف تيك توك">مشاهدات لايف تيك توك</option>
+                    </optgroup>
+
+                    <!-- إنستغرام -->
+                    <optgroup label="إنستغرام (Instagram)">
+                        <option value="متابعين إنستغرام">متابعين إنستغرام</option>
+                        <option value="لايكات إنستغرام">لايكات إنستغرام</option>
+                        <option value="مشاهدات إنستغرام">مشاهدات إنستغرام</option>
+                        <option value="مشاهدات لايف إنستغرام">مشاهدات لايف إنستغرام</option>
+                    </optgroup>
+
+                    <!-- فيسبوك -->
+                    <optgroup label="فيسبوك (Facebook)">
+                        <option value="متابعين فيسبوك">متابعين فيسبوك</option>
+                        <option value="لايكات فيسبوك">لايكات فيسبوك</option>
+                        <option value="مشاهدات فيسبوك">مشاهدات فيسبوك</option>
+                        <option value="مشاهدات لايف فيسبوك">مشاهدات لايف فيسبوك</option>
+                    </optgroup>
+
+                    <!-- يوتيوب -->
+                    <optgroup label="يوتيوب (YouTube)">
+                        <option value="اشتراكات يوتيوب">اشتراكات يوتيوب</option>
+                        <option value="لايكات يوتيوب">لايكات يوتيوب</option>
+                        <option value="مشاهدات يوتيوب">مشاهدات يوتيوب</option>
+                    </optgroup>
+
+                    <!-- منصة كيك -->
+                    <optgroup label="منصة كيك (Kick)">
+                        <option value="مشاهدات برنامج كيك">مشاهدات برنامج كيك</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">الكمية المطلوبة:</label>
+                <input type="text" id="quantity" required placeholder="مثال: 1000">
+            </div>
+
+            <button type="submit">إرسال الطلب الآن</button>
+        </form>
+
+        <div class="admin-link">
+            <a href="admin.html" target="_blank">دخول لوحة التحكم (الإدارة)</a>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>اختر الخدمة:</label>
-        <select id="serviceName">
-            <option value="زيادة متابعين إنستغرام (1.50$ لكل 100)">زيادة متابعين إنستغرام (1.50$ لكل 100)</option>
-            <option value="زيادة لاكات تيك توك (1.00$ لكل 100)">زيادة لايكات تيك توك (1.00$ لكل 100)</option>
-        </select>
-    </div>
+    <script>
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const service = document.getElementById('service').value;
+            const quantity = document.getElementById('quantity').value;
 
-    <div class="form-group">
-        <label>رابط الحساب:</label>
-        <input type="text" id="link" placeholder="https://instagram.com/username">
-    </div>
-
-    <div class="form-group">
-        <label>الكمية:</label>
-        <input type="number" id="quantity" value="100" oninput="calculateTotal()">
-    </div>
-
-    <div class="form-group">
-        <label>السعر الإجمالي ($):</label>
-        <input type="text" id="total" value="1.50" readonly>
-    </div>
-
-    <button onclick="sendOrder()">إرسال الطلب</button>
-
-    <div id="message"></div>
-</div>
-
-<script>
-    // جلب معلومات المستخدم والرصيد عند فتح الصفحة
-    async function fetchUserData() {
-        try {
-            const res = await fetch('http://localhost:5000/api/user');
-            const data = await res.json();
-            document.getElementById('username').innerText = data.username;
-            document.getElementById('balance').innerText = data.balance.toFixed(2);
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    function calculateTotal() {
-        const qty = document.getElementById('quantity').value;
-        const total = (qty * 0.015).toFixed(2);
-        document.getElementById('total').value = total;
-    }
-
-    // إرسال الطلب للسيرفر
-    async function sendOrder() {
-        const serviceName = document.getElementById('serviceName').value;
-        const link = document.getElementById('link').value;
-        const quantity = document.getElementById('quantity').value;
-        const total = document.getElementById('total').value;
-
-        try {
-            const res = await fetch('http://localhost:5000/api/order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ serviceName, link, quantity, total })
-            });
-
-            const data = await res.json();
-            const msgBox = document.getElementById('message');
-
-            if (data.success) {
-                msgBox.style.color = 'green';
-                msgBox.innerText = data.message;
-                document.getElementById('balance').innerText = data.balance.toFixed(2);
-            } else {
-                msgBox.style.color = 'red';
-                msgBox.innerText = data.message;
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, service, quantity })
+                });
+                if (response.ok) {
+                    alert('تم إرسال طلبك بنجاح! سيتم تنفيذ الطلب قريباً.');
+                    document.getElementById('orderForm').reset();
+                } else {
+                    alert('حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى.');
+                }
+            } catch (err) {
+                alert('تعذر الاتصال بالسيرفر.');
             }
-        } catch (err) {
-            console.error(err);
-            alert('حدث خطأ في الاتصال بالسيرفر!');
-        }
-    }
-
-    fetchUserData();
-</script>
-
+        });
+    </script>
 </body>
 </html>
